@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <title></title>
+
+        <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.2/angular.min.js"></script>     
+        <link href="css/main.css" rel="stylesheet" type="text/css" />
+        <script type="text/javascript" src="js/main.js"></script>
+    </head>
+    <body>
+        <form name="myForm" ng-app="myApp" ng-controller="myCtrl">
+            <div class="form-group">
+                <input name="search" ng-model="artist" ng-minlength="1" class="form-control"></input>
+                <p ng-show="!artists.length && myForm.submitBtn.$touched">Please enter a valid artist</p>
+            </div>
+            <div class="form-group">
+                <button  name="submitBtn" class="btn btn-primary" ng-click="getArtist()" type="submit">Submit</button>
+            </div>
+            <div class="container-fixed">
+                <ul>
+                    <li ng-repeat="artist in artists" title="{{artist.name}}">{{artist.name}}</li>
+                </ul>
+            </div>
+        </form>
+    </body>
+</html>
