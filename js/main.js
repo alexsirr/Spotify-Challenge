@@ -3,6 +3,7 @@ var base = "https://api.spotify.com";
 
 var myCtrl = myApp.controller("myCtrl", function($scope, $http) {
 	$scope.maxSize = 10;
+	$scope.reverseSort = true;
 	$scope.audioObject = {};
 	$scope.currentlyPlaying;
 	$scope.artist;
