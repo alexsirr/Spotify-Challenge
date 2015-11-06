@@ -66,3 +66,6 @@ var myCtrl = myApp.controller("myCtrl", function($scope, $http) {
   	}
 });
 
+$("#select-login").on("click", function() {
+	console.log(test);
+})
