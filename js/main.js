@@ -4,11 +4,10 @@ var base = "https://api.spotify.com";
 var myCtrl = myApp.controller("myCtrl", function($scope, $http) {
 	$scope.maxSize = 10;
 	$scope.reverseSort = true;
-	$scope.audioObject = {};
-	$scope.currentlyPlaying;
 	$scope.artist;
 
     $scope.execute = function() {
+    	$scope.finished = false;
     	$scope.myArtists;
     	// playlist of every track from every related artist
 		$scope.completePlaylist = [];
@@ -17,25 +16,34 @@ var myCtrl = myApp.controller("myCtrl", function($scope, $http) {
     	// get artists from user input
         $http.get(base + "/v1/search?type=artist&query=" + $scope.artist).success(function(response) {
             $scope.myArtists = response.artists.items;
-            $scope.changeInput($scope.myArtists[0].name);
-        	// get related artists from the 
-            $http.get(base + "/v1/artists/" + $scope.myArtists[0].id + "/related-artists").success(function(response) {
-    			$scope.relatedArtists = response.artists;
-    			var times = 0;
-    			$scope.relatedArtists.forEach(function(item) {
-    				// get top tracks from each related artist
-					$http.get(base + "/v1/artists/" + item.id + "/top-tracks?country=US").success(function(response) {
-						response.tracks.forEach(function(track) {
-							$scope.completePlaylist.push(track);
-							times++;
-							// check if the completePlaylist is done being filled
-							if (times == $scope.relatedArtists.length * response.tracks.length) {
-								$scope.randomize($scope.completePlaylist);
-							}
+            if ($scope.myArtists.length != 0) {
+            	$scope.changeInput($scope.myArtists[0].name);
+	        	// get related artists from the 
+	            $http.get(base + "/v1/artists/" + $scope.myArtists[0].id + "/related-artists").success(function(response) {
+	    			$scope.relatedArtists = response.artists;
+	    			var times = 0;
+	    			if ($scope.relatedArtists.length != 0) {
+		    			$scope.relatedArtists.forEach(function(item) {
+		    				// get top tracks from each related artist
+							$http.get(base + "/v1/artists/" + item.id + "/top-tracks?country=US").success(function(response) {
+								response.tracks.forEach(function(track) {
+									$scope.completePlaylist.push(track);
+									times++;
+									// check if the completePlaylist is done being filled
+									if (times == $scope.relatedArtists.length * response.tracks.length) {
+										$scope.randomize($scope.completePlaylist);
+									}
+								});
+							});
 						});
-					});
-				});
-    		});   
+	    			} else {
+	    				$scope.finished = true;
+	    			}
+	    			
+	    		});   
+            } else {
+            	$scope.finished = true;
+            }
         });
     }
 
@@ -50,33 +58,11 @@ var myCtrl = myApp.controller("myCtrl", function($scope, $http) {
     			times++;
     		}
     	}
+    	$scope.finished = true;
     }
-
-    // play code from https://github.com/mkfreeman/spotify-template/blob/master/app.js
-    $scope.play = function(track) {
-    	song = track.preview_url;
-	    if($scope.currentSong == song) {
-	      $scope.audioObject.pause()
-	      $scope.currentlyPlaying = null;
-	      $scope.currentSong = false
-	      return
-	    }
-	    else {
-	      if($scope.audioObject.pause != undefined) {
-	      	$scope.audioObject.pause();
-	      	$scope.currentlyPlaying = null;
-	      }
-	      $scope.audioObject = new Audio(song);
-	      $scope.audioObject.play()  
-	      $scope.currentlyPlaying = track.name + " by " + track.artists[0].name;
-	      $scope.currentSong = song
-	    }
-  	}
 
   	$scope.changeInput = function(item) {
   		$scope.artist = item;
-  		document.getElementsByName("search").value = item;
   	}
-
 });
 
