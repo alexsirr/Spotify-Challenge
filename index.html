@@ -5,7 +5,7 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <title></title>
+        <title>Create a Playlist</title>
 
         <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
         <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.2/angular.min.js"></script> 
@@ -23,13 +23,13 @@
     		<button id="saved-lists" class="btn btn-success" ng-show="userId" ><a id="saved-link" href="playlists.html">Saved Playlists</a></button>
     	</div>
     	<div class="container">
-    		<h1>RANDOMIZE POPULAR PLAYLIST THINGY</h1>
+    		<h1>Create a Custom Playlist Now!</h1>
     	</div>
         <form name="myForm" class="container">
             <div class="form-group" ng-class="{'has-error' : myForm.search.$touched && myForm.search.$invalid}">
             	<label for="search">Artist:</label>
-                <input class="form-control" ng-required="true" ng-model="artist" required name="search" ng-minlength="1" placeholder="Enter an artist">
-                <span>Recently searched:<a href="#" ng-click="changeInput(s.text); execute()" ng-repeat="s in searches | limitTo:-5" ng-if="s.userId == userId"> {{s.text}} </a></span>
+                <input class="form-control" ng-required="true" ng-model="artist" required name="search" ng-minlength="1" placeholder="Enter a Spotify Artist">
+                <span ng-show="userId">Recently searched:<a href="#" ng-click="changeInput(s.text); execute()" ng-repeat="s in searches | limitTo:-5" ng-if="s.userId == userId"> {{s.text}} </a></span>
 				<span ng-show="myForm.search.$touched && !myForm.search.$valid" class="help-block">Must enter an artist to search</span>
 
             </div>
@@ -82,6 +82,11 @@
             </ul>
         </div>
 
+        <div class="container" id="about">
+        	<p>This site was created for people who are looking for new music that is related to their favorite artists, so they can add some variety to their playlists.
+        	 Just enter in an artist available on Spotify, and a randomly generated playlist will be created from top tracks of artists related to the one searched. </p>
+        </div>
+
         <div id="overlay" ng-click="hideOverlay()" style="display:none;"></div>
 
         <div id="signin" class="signin-container" style="display:none;">
@@ -98,9 +103,10 @@
 
 			    <div id="login" class="login">
 	                <form id="loginForm" name="loginForm" novalidate>
-	                	<div class="form-group" ng-class="{'has-error' : loginForm.login-email.$touched && loginForm.login-email.$invalid}">
+	                	<div class="form-group">
 	                		<label for="login-email">Email</label><br>
 	                        <input id="login-email" name="login-email" class="form-control" type="email" ng-model="email" ng-required="true" required/><br>
+	                        <span ng-show="loginForm.login-email.$invalid">Must enter valid email</span>
 	                    </div>
 	                    	
 	                    <div>
@@ -121,6 +127,7 @@
 	                <form id="registerForm" name="registerForm">
                         <label for="register-email">Email Address</label><br>
                         <input id="register-email" name="register-email" class="form-control" ng-model="email" type="email" ng-required="true" required/><br>
+                        <span ng-show="registerForm.register-email.$invalid">Must enter valid email</span>
 
                         <label for="register-pass">Password</label><br>
                         <input id="register-pass" name="register-pass" class="form-control" ng-model="password" type="password" ng-required="true" required/>

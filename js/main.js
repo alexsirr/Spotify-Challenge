@@ -78,6 +78,7 @@ var myCtrl = myApp.controller("myCtrl", function($scope, $http, $firebaseAuth, $
 
     $scope.execute = function() {
     	$scope.finished = false;
+    	// prevent multiple saves on the same playlist
     	$scope.saved = false;
     	staticArtist = $scope.artist;
     	if ($scope.userId) {

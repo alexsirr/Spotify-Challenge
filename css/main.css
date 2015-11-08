@@ -1,3 +1,7 @@
+body {
+	background-color: #E9EAEE;
+}
+
 footer {
 	margin-top: 20px;
 }
@@ -91,4 +95,26 @@ footer {
 #saved-msg {
 	color: green;
 	font-weight: bold;
+}
+
+#about {
+	background-color: #dbdce3;
+	width: 50%;
+	padding: 5px;
+	border-radius: 15px;
+	margin-bottom: 15px;
+}
+
+@media screen and (max-width: 768px) {
+	h1 {
+		font-size: 25px;
+		font-weight: bold;
+	}
+
+	.signin-container{
+		max-width:330px;
+		height: auto;
+		left:25%;
+		top:80px;
+	}
 }
