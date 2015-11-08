@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <title>Saved Playlists</title>
+
+        <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.2/angular.min.js"></script> 
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+
+        <script src="https://cdn.firebase.com/js/client/2.2.4/firebase.js"></script>
+		<script src="https://cdn.firebase.com/libs/angularfire/1.1.3/angularfire.min.js"></script>
+
+        <link href="css/main.css" rel="stylesheet" type="text/css" />
+        <script type="text/javascript" src="js/main.js"></script>
+    </head>
+    <body ng-app="myApp" ng-controller="myCtrl" novalidate>
+    	<div class="container" id="navbar">
+    		<button id="account-action" class="btn btn-primary" ng-click="openLogin()">Sign In</button>
+    		<button id="return-btn" class="btn btn-success"><a id="return-link" href="index.html">Go Back</a></button>
+    	</div>
+
+        <div id="playlist-signin-msg" class="container" ng-show="!userId">
+            <h1>Sign in now to save playlists!</h1>
+        </div>
+
+        <div id="no-list-msg" class="container" ng-show="playlists.length == 0">
+            <h1>No saved playlists</h1>
+        </div>
+
+        <div class="container" ng-repeat="playlist in playlists" ng-show="userId">
+            <h1>Saved playlist for <b>{{playlist.artist}}</b></h1>
+            <table class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <td></td>
+                        <td> <a ng-click="sortType = 'artists[0].name'; reverseSort = !reverseSort" href="#">Artist Name</a></td>
+                        <td> <a ng-click="sortType = 'name'; reverseSort = !reverseSort" href="#">Track Name</a></td>
+                        <td> <a ng-click="sortType = 'album.name'; reverseSort = !reverseSort" href="#">Album Name</a></td>
+                    </tr>
+                </thead>
+                <tr ng-repeat="track in playlist.content | orderBy:sortType:reverseSort | filter:search">
+                    <td>{{$index + 1}}</td>
+                    <td>{{track.artists[0].name}}</td>
+                    <td>{{track.name}}</td>
+                    <td>{{track.album.name}}</td>
+                </tr>
+            </table> 
+            <button class="btn btn-danger" ng-click="deletePlaylist(playlist)">Delete this playlist</button>
+        </div>
+
+        <div id="overlay" ng-click="hideOverlay()" style="display:none;"></div>
+
+        <div id="signin" class="signin-container" style="display:none;">
+            <header class="popupHeader">
+                <span id="signup-title" class="title">Login</span>
+                <span class="close" ng-click="closeSignin()"><i class="fa fa-times"></i></span>
+            </header>
+            <div class="signin-body">
+                <div id="selection" class="selection">
+                    <div><p>Sign in to save playlists so you can refer back to them later!</p></div>
+                    <div><button id="select-login" class="btn btn-primary left-btn" ng-click="loginSelect()">Login</button></div>
+                    <div><button id="select-register" class="btn btn-primary right-btn" ng-click="registerSelect()">Sign up</button></div>
+                </div>
+
+                <div id="login" class="login">
+                    <form id="loginForm" name="loginForm" novalidate>
+                        <div class="form-group" ng-class="{'has-error' : loginForm.login-email.$touched && loginForm.login-email.$invalid}">
+                            <label for="login-email">Email</label><br>
+                            <input id="login-email" name="login-email" class="form-control" type="email" ng-model="email" ng-required="true" required/><br>
+                        </div>
+                            
+                        <div>
+
+                            <label for="login-pass">Password</label><br>
+                            <input id="login-pass" name="login-pass" class="form-control" type="password" ng-model="password" ng-required="true" required/>
+                        </div>
+                        
+
+                        <div class="form-group">
+                            <div class="form-group"><button class="btn btn-primary back-btn left-btn" ng-click="backSelect()">Back</button></div>
+                            <div class="form-group"><button id="login-btn" class="btn btn-primary right-btn" ng-click="signIn()" ng-disabled="loginForm.$invalid">Login</button></div>
+                        </div>
+                    </form>
+                </div>
+
+                <div id="register" class="register" novalidate>
+                    <form id="registerForm" name="registerForm">
+                        <label for="register-email">Email Address</label><br>
+                        <input id="register-email" name="register-email" class="form-control" ng-model="email" type="email" ng-required="true" required/><br>
+
+                        <label for="register-pass">Password</label><br>
+                        <input id="register-pass" name="register-pass" class="form-control" ng-model="password" type="password" ng-required="true" required/>
+
+                        <div>
+                            <div><button class="btn btn-primary back-btn left-btn" ng-click="backSelect()">Back</button></div>
+                            <div><button id="register-btn" class="btn btn-primary right-btn" ng-click="signUp()" ng-disabled="registerForm.$invalid">Register</button></div>
+                        </div>
+                    </form>
+                </div>
+            </div>    
+        </div>
+    </body>
+    <footer>
+        
+    </footer>
+</html>

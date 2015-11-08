@@ -1,14 +1,17 @@
 var myApp = angular.module("myApp", ['firebase']);
 var base = "https://api.spotify.com";
+var staticArtist;
 
 var myCtrl = myApp.controller("myCtrl", function($scope, $http, $firebaseAuth, $firebaseArray, $firebaseObject) {
 	// firebase actions
 	var ref = new Firebase("https://spotify-as-challenge.firebaseio.com/");
     var userRef = ref.child("users");
     var searchRef = ref.child("searches");
+    var playlistRef = ref.child("playlists");
 
     $scope.users = $firebaseObject(userRef);
     $scope.searches = $firebaseArray(searchRef);
+    $scope.playlists = $firebaseArray(playlistRef);
 
     $scope.authObj = $firebaseAuth(ref);
 
@@ -75,7 +78,15 @@ var myCtrl = myApp.controller("myCtrl", function($scope, $http, $firebaseAuth, $
 
     $scope.execute = function() {
     	$scope.finished = false;
-    	console.log($scope.artist)
+    	$scope.saved = false;
+    	staticArtist = $scope.artist;
+    	if ($scope.userId) {
+	    	$scope.searches.$add({
+		        text:staticArtist,
+		        userId: $scope.userId
+			});
+			$scope.searches.$save();
+    	}
     	$scope.myArtists;
     	// playlist of every track from every related artist
 		$scope.completePlaylist = [];
@@ -91,19 +102,18 @@ var myCtrl = myApp.controller("myCtrl", function($scope, $http, $firebaseAuth, $
 	    			$scope.relatedArtists = response.artists;
 	    			var times = 0;
 	    			if ($scope.relatedArtists.length != 0) {
-		    			$scope.relatedArtists.forEach(function(item) {
+		    			$scope.relatedArtists.forEach(function(item, index) {
 		    				// get top tracks from each related artist
 							$http.get(base + "/v1/artists/" + item.id + "/top-tracks?country=US").success(function(response) {
-								response.tracks.forEach(function(track) {
+								response.tracks.forEach(function(track, index2) {
 									$scope.completePlaylist.push(track);
-									times++;
-									// check if the completePlaylist is done being filled
-									if (times == $scope.relatedArtists.length * response.tracks.length) {
+									// check to see if playlist is done being added to
+									if (index == $scope.relatedArtists.length -1 && index2 == response.tracks.length - 1 ) {
 										$scope.randomize($scope.completePlaylist);
 									}
 								});
 							});
-						});
+						})	
 	    			} else {
 	    				$scope.finished = true;
 	    			}
@@ -141,7 +151,6 @@ var myCtrl = myApp.controller("myCtrl", function($scope, $http, $firebaseAuth, $
   	}
 
   	// Button functions
-
   	$scope.openLogin = function() {
   		if (document.getElementById("account-action").innerHTML == "Logout") {
   			$scope.logOut();
@@ -184,6 +193,23 @@ var myCtrl = myApp.controller("myCtrl", function($scope, $http, $firebaseAuth, $
   		document.getElementById("signin").style.display = 'none';
   		$scope.email = "";
   		$scope.password = "";
+  	}
+
+  	// Action functions
+  	$scope.saveList = function() {
+  		var savedList = $scope.randomizePlaylist;
+  		$scope.playlists.$add({
+  			userId: $scope.userId,
+  			content: savedList,
+  			artist: staticArtist
+  		})
+  		$scope.playlists.$save();
+  		$scope.saved = true;
+  	}
+
+  	$scope.deletePlaylist = function(deleteItem) {
+  		$scope.playlists.$remove(deleteItem);
+  		$scope.playlists.$save();
   	}
 
 });

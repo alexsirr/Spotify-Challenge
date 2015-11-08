@@ -20,6 +20,7 @@
     <body ng-app="myApp" ng-controller="myCtrl" novalidate>
     	<div class="container" id="navbar">
     		<button id="account-action" class="btn btn-primary" ng-click="openLogin()">Sign In</button>
+    		<button id="saved-lists" class="btn btn-success" ng-show="userId" ><a id="saved-link" href="playlists.html">Saved Playlists</a></button>
     	</div>
     	<div class="container">
     		<h1>RANDOMIZE POPULAR PLAYLIST THINGY</h1>
@@ -28,8 +29,9 @@
             <div class="form-group" ng-class="{'has-error' : myForm.search.$touched && myForm.search.$invalid}">
             	<label for="search">Artist:</label>
                 <input class="form-control" ng-required="true" ng-model="artist" required name="search" ng-minlength="1" placeholder="Enter an artist">
-				<p ng-show="myForm.search.$touched && !myForm.search.$valid" class="help-block">Must enter an artist to search</p>
-				
+                <span>Recently searched:<a href="#" ng-click="changeInput(s.text); execute()" ng-repeat="s in searches | limitTo:-5" ng-if="s.userId == userId"> {{s.text}} </a></span>
+				<span ng-show="myForm.search.$touched && !myForm.search.$valid" class="help-block">Must enter an artist to search</span>
+
             </div>
             <div class="form-group" ng-class="{'has-error' : myForm.playlistSize.$touched && myForm.playlistSize.$invalid}">
             	<label for="playlistSize">Max Playlist Size:</label>
@@ -65,9 +67,13 @@
         	</table> 
         	<h3 ng-show="(randomizePlaylist | filter:search).length == 0">Nothing here by {{search}}</h3>
         	<button  name="shuffle" class="btn btn-primary" ng-disabled="myForm.$invalid" ng-click="randomize()">Get a New Playlist!</button>
+        	<button id="save-playlist" class="btn btn-success" ng-show="userId" ng-disabled="randomizePlaylist.length == 0" ng-click="saveList()">Save this Playlist!</button>
+        	<div>
+        		<span id="saved-msg" ng-show="saved">Playlist saved successfully!</span>
+        	</div>
         </div>
         <div class="container">
-        	<h2 ng-show="finished && myArtists.length != 0 && randomizePlaylist.length == 0">Sorry, it appears that <b>{{myArtists[0].name}}</b> does not have any related artists...</h2>
+        	<h2 ng-show="finished && myArtists.length != 0 && relatedArtists.length == 0">Sorry, it appears that <b>{{myArtists[0].name}}</b> does not have any related artists...</h2>
         </div>
         <div class="container" ng-show="finished && myArtists.length > 1">
         	<h2>Also Found...</h2>
@@ -85,36 +91,43 @@
 			</header>
 			<div class="signin-body">
 				<div id="selection" class="selection">
+					<div><p>Sign in to save playlists so you can refer back to them later!</p></div>
 			        <div><button id="select-login" class="btn btn-primary left-btn" ng-click="loginSelect()">Login</button></div>
 			        <div><button id="select-register" class="btn btn-primary right-btn" ng-click="registerSelect()">Sign up</button></div>
 			    </div>
 
 			    <div id="login" class="login">
-	                <form>
-                        <label for="login-email">Email</label><br>
-                        <input id="login-email" class="form-group" type="email" ng-model="email"/><br>
+	                <form id="loginForm" name="loginForm" novalidate>
+	                	<div class="form-group" ng-class="{'has-error' : loginForm.login-email.$touched && loginForm.login-email.$invalid}">
+	                		<label for="login-email">Email</label><br>
+	                        <input id="login-email" name="login-email" class="form-control" type="email" ng-model="email" ng-required="true" required/><br>
+	                    </div>
+	                    	
+	                    <div>
 
-                        <label for="login-pass">Password</label><br>
-                        <input id="login-pass" class="form-group" type="password" ng-model="password"/>
+	                        <label for="login-pass">Password</label><br>
+	                        <input id="login-pass" name="login-pass" class="form-control" type="password" ng-model="password" ng-required="true" required/>
+	                	</div>
+                        
 
-                        <div>
-                            <div><button class="btn btn-primary back-btn left-btn" ng-click="backSelect()">Back</button></div>
-                            <div><button id="login-btn" class="btn btn-primary right-btn" ng-click="signIn()">Login</button></div>
+                        <div class="form-group">
+                            <div class="form-group"><button class="btn btn-primary back-btn left-btn" ng-click="backSelect()">Back</button></div>
+                            <div class="form-group"><button id="login-btn" class="btn btn-primary right-btn" ng-click="signIn()" ng-disabled="loginForm.$invalid">Login</button></div>
                         </div>
 	                </form>
 	            </div>
 
-	            <div id="register" class="register">
-	                <form>
+	            <div id="register" class="register" novalidate>
+	                <form id="registerForm" name="registerForm">
                         <label for="register-email">Email Address</label><br>
-                        <input id="register-email" class="form-group" ng-model="email" type="email" /><br>
+                        <input id="register-email" name="register-email" class="form-control" ng-model="email" type="email" ng-required="true" required/><br>
 
                         <label for="register-pass">Password</label><br>
-                        <input id="register-pass" class="form-group" ng-model="password" type="password" />
+                        <input id="register-pass" name="register-pass" class="form-control" ng-model="password" type="password" ng-required="true" required/>
 
                         <div>
                             <div><button class="btn btn-primary back-btn left-btn" ng-click="backSelect()">Back</button></div>
-                            <div><button id="register-btn" class="btn btn-primary right-btn" ng-click="signUp()">Register</button></div>
+                            <div><button id="register-btn" class="btn btn-primary right-btn" ng-click="signUp()" ng-disabled="registerForm.$invalid">Register</button></div>
                         </div>
 		            </form>
 		        </div>

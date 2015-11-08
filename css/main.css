@@ -1,3 +1,7 @@
+footer {
+	margin-top: 20px;
+}
+
 #signin {
 	background: #FFF;
 	border-radius: 15px;
@@ -66,4 +70,25 @@
 #account-action {
 	float: right;
 	margin-right: 20px;
+	font-weight: bold;
+}
+
+#saved-lists, #return-btn{
+	float: right;
+	margin-right: 10px;
+	font-weight: bold;
+}
+
+#saved-link, #return-link {
+	text-decoration: none;
+	color: white;
+}
+
+#playlist-signin-msg, #no-list-msg {
+	text-align: center;
+}
+
+#saved-msg {
+	color: green;
+	font-weight: bold;
 }
